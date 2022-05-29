@@ -9,16 +9,17 @@ end
 
 function GeoIPExample:PlayerJoin( args )
     local plr = args.player
-    local data = self.GeoIP.Query(plr:GetIP())
-    Chat:Send(plr, "Hello " .. plr:GetName() .. "!\nAre you from " .. data["city"] .. "?", Color.White)
+    if self.GeoIP.isIpValid(plr:GetIP()) then
+        local data = self.GeoIP.Query(plr:GetIP())
+        Chat:Send(plr, "Hello " .. plr:GetName() .. "!\nAre you from " .. data["city"] .. "?", Color.White)
+    end
 end
 
 function GeoIPExample:PlayerChat( args )
     local msg = args.text
-    local plr = args.player
-    local data = self.GeoIP.Query(plr:GetIP())
+    local ip = ""
 
-	if ( msg:sub(1, 1) ~= "/" ) then
+    if ( msg:sub(1, 1) ~= "/" ) then
 		return true
 	end
 
@@ -27,7 +28,14 @@ function GeoIPExample:PlayerChat( args )
 		table.insert(cmdargs, word)
 	end
 
-	if (cmdargs[1] == "/ip") then
+    if cmdargs[2] then 
+        ip = cmdargs[2]
+    else
+        ip = args.player:GetIP()
+    end
+
+	if cmdargs[1] == "/ip" and self.GeoIP.isIpValid(ip) then
+        local data = self.GeoIP.Query(ip)
 		Chat:Send( args.player, "==============", Color.White )
 		Chat:Send( args.player, "Query: ", Color.White, data["query"], Color.DarkGray )
         Chat:Send( args.player, "Status: ", Color.White, data["status"], Color.DarkGray )
@@ -45,6 +53,10 @@ function GeoIPExample:PlayerChat( args )
         Chat:Send( args.player, "AS: ", Color.White, data["as"], Color.DarkGray )
 		Chat:Send( args.player, "==============", Color.White )
         return false
+    elseif cmdargs[1] == "/ip" then
+        Chat:Send( args.player, ip .. " is not valid IP", Color.Red )
+        return false
+
     end
 	return false
 end
