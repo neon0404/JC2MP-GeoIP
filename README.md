@@ -3,8 +3,8 @@
 
 Module for JC2MP that provides Geolocation API from **ip-api.com**
 
-* **Fast** and **easy** integration.
-* Lightweight.
+* **Fast** and **easy** integration
+* Lightweight
 * Just **one** function, that cares about all
 * Based on **free** and **fast** ip-api.com
 * Requires **LuaSocket** toolkit
