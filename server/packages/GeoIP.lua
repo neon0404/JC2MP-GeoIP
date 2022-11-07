@@ -10,35 +10,56 @@ local socket = require("socket.http")
 local json = require("json")
 GeoIP = {}
 local _M = GeoIP
--- Module, dependencies and variables --
 
+local url = "http://ip-api.com/json/" -- Notice: If you change it, everything will break
+
+local failed = {
+    ["query"] =  "N/A",
+    ["status"] = "fail",
+    ["continent"] = "N/A",
+    ["continentCode"] = "N/A",
+    ["country"] = "N/A",
+    ["countryCode"] = "N/A",
+    ["region"] = "N/A",
+    ["regionName"] = "N/A",
+    ["city"] = "N/A",
+    ["district"] = "N/A",
+    ["zip"] = "N/A",
+    ["lat"] = "N/A",
+    ["lon"] = "N/A",
+    ["timezone"] = "N/A",
+    ["offset"] = "N/A",
+    ["currency"] = "N/A",
+    ["isp"] = "N/A",
+    ["org"] = "N/A",
+    ["as"] = "N/A",
+    ["asname"] = "N/A",
+    ["mobile"] = false,
+    ["proxy"] = false,
+    ["hosting"] = false
+}
+-- Module, dependencies and variables --
 
 -- Query function --
 _M.Query = function( ip, lang )
-    if lang == nil then lang = "en" end -- If lang not defined, it will set it to default(english)
-        local request, rc, rh = socket.request("http://ip-api.com/json/" .. ip .. "?lang=" .. lang)
+    if lang == nil then lang = "en" end -- If lang not defined, it will set it to default (english)
+        local request, rc, rh = socket.request(url .. ip .. "?lang=" .. lang)
+        if (rh == nil) then
+            print("IP Data provider didn't response. Please check access to ip-api.com")
+            return failed
+        end
         local decoded = json.decode(request)
         if decoded["status"] == "fail" then
-            error("GeoIP returned an error: " .. decoded["message"] .. ":" .. decoded["query"]) -- I'm sure that's not the best way to handle exceptions :)
+            print("GeoIP returned an error: " .. decoded["message"] .. ": " .. decoded["query"])
+            local fld = failed
+            fld["query"] = decoded["query"]
+            print(fld["query"])
+            return fld
         else
             return decoded
         end
 end
 -- Query function --
-
-
--- Function for validating ip's --
-_M.isIpValid = function( ip )
-    local request = socket.request("http://ip-api.com/json/" .. ip)
-    local decoded = json.decode(request)
-    if decoded["status"] == "fail" then
-        return false
-    else
-        return true
-    end
-end
--- Function for validating ip's --
-
 
 return _M -- Just a module return ¯\_(ツ)_/¯
 
