@@ -14,9 +14,6 @@ Module for JC2MP that provides Geolocation API from **ip-api.com**
 * IP - Target IP
 * lang - Localization parameter, now supports only **en/de/es/fr**
 
-```GeoIP.isIpValid(ip)``` _Returns boolean_
-* IP - Target IP
-
 **Simple Example:**
 ```lua
 class 'GeoIPExample'
